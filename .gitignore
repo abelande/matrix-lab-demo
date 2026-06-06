@@ -1,0 +1,18 @@
+.env
+.env.*
+!.env.example
+# real data & trained models — never commit
+data/ES_15min_1Y1M.csv
+*.dbn.zst
+*.pkl
+*.pt
+deployment/*.pkl
+deployment/*.json
+deployment/*.csv
+artifacts/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+.DS_Store
