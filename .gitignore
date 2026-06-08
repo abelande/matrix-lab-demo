@@ -16,3 +16,7 @@ __pycache__/
 venv/
 .ipynb_checkpoints/
 .DS_Store
+
+# raw Databento export — never ship (licensed)
+data/GLBX-*/
+*.zst
