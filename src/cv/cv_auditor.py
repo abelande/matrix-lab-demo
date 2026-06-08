@@ -122,6 +122,10 @@ class CVLeakageAuditor:
                 "train_max_time": idx[tr].max() if len(tr) else pd.NaT,
                 "test_min_time": idx[te].min() if len(te) else pd.NaT,
                 "test_max_time": idx[te].max() if len(te) else pd.NaT,
+                # Always-present leak columns so downstream report-building never
+                # KeyErrors when t1/embargo are absent for a run; real values below override.
+                "overlap_leak_n": 0, "overlap_leak": False,
+                "embargo_leak_n": 0, "embargo_leak": False,
             }
 
             if t1a is not None:
@@ -161,7 +165,16 @@ class CVLeakageAuditor:
 
             rows.append(row)
 
-        return pd.DataFrame(rows)
+        df = pd.DataFrame(rows)
+        # Guarantee leak columns exist even when a splitter yields no folds (empty df
+        # has no columns), so downstream report-building never KeyErrors.
+        for _col, _default in (("overlap_leak", False), ("overlap_leak_n", 0),
+                               ("overlap_window_n", 0), ("overlap_window_frac", 0.0),
+                               ("embargo_leak", False), ("embargo_leak_n", 0),
+                               ("embargo_window_n", 0), ("embargo_window_frac", 0.0)):
+            if _col not in df.columns:
+                df[_col] = _default
+        return df
 
     def _get_splits(self, cv_splitter) -> List[Tuple[np.ndarray, np.ndarray]]:
         if self.y is not None:

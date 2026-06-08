@@ -177,7 +177,9 @@ def compute_qme_dependence(
         }
 
     shap_clean = shap_f1[mask]
-    x_clean = x_f2[mask]
+    # Cast to float so np.percentile works on boolean/int feature columns
+    # (numpy >= 2.0 raises "boolean subtract" inside percentile's interpolation).
+    x_clean = np.asarray(x_f2[mask], dtype=float)
 
     # Compute quartiles
     q1_threshold = np.percentile(x_clean, 25)
